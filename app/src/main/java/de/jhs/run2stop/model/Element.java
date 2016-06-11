@@ -4,6 +4,8 @@ package de.jhs.run2stop.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,5 +139,23 @@ public class Element {
     public void setNodes(List<Integer> nodes) {
         this.nodes = nodes;
     }
+
+
+    public GeoPoint getGeoPoint()
+    {
+        return new GeoPoint(this.getLat(),this.getLon());
+    }
+
+    public int compareTo(Element e)
+    {
+        final int BEFORE = -1;
+        final int EQUAL = 0;
+        final int AFTER = 1;
+
+       double dist =  Calculator.distFromCoords(this.getGeoPoint(),e.getGeoPoint());
+
+        return 0;
+    }
+
 
 }

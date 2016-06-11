@@ -64,6 +64,18 @@ public class Calculator {
         double Bd = WGS84_b * Math.sin(lat);
         return Math.sqrt((An * An + Bn * Bn) / (Ad * Ad + Bd * Bd));
     }
+    public static float distFromCoords(GeoPoint loc1, GeoPoint loc2) {
+        double earthRadius = 6371000; //meters
+        double dLat = Math.toRadians(loc2.getLatitude()-loc1.getLatitude());
+        double dLng = Math.toRadians(loc2.getLongitude()-loc1.getLongitude());
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(loc1.getLatitude())) * Math.cos(Math.toRadians(loc2.getLatitude())) *
+                        Math.sin(dLng/2) * Math.sin(dLng/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        float dist = (float) (earthRadius * c);
+
+        return dist;
+    }
 
     public static  String getBoundingBoxString(GeoPoint mapPoint,double distance)
     {

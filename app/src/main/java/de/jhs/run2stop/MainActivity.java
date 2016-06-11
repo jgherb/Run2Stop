@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
@@ -35,7 +36,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -171,6 +177,7 @@ boolean gotStation = false;
         {
             getStation(startPoint);
             gotStation=true;
+            mMapView.getOverlays().clear();
         }
 
 
@@ -214,7 +221,7 @@ boolean gotStation = false;
         mMapController.setCenter(startPoint);
     }
 
-    private  void getStation(GeoPoint endPoint)
+    private  void getStation(final  GeoPoint endPoint)
     {
 
         Ion.getDefault(this).configure().setLogging("ION", Log.DEBUG);
@@ -242,12 +249,64 @@ boolean gotStation = false;
                 RootElement userApiFrame = (RootElement)new Gson().fromJson(result,collectionType);
                 List<Element> elements = userApiFrame.getElements();
 
-                for(Element element : elements)
+                List<Element> filteredElements = new ArrayList<Element>();
+
+                for(Element el: elements)
                 {
-                    Toast.makeText(MainActivity.this,element.getTags().getName(),Toast.LENGTH_LONG).show();
+                    if(!containsName(el.getTags().getName(),filteredElements))
+                    {
+                        filteredElements.add(el);
+                    }
                 }
+
+                TreeMap<Double,Element> elemDistList = new TreeMap<Double, Element>();
+                for(Element element : filteredElements)
+                {
+                    double dist = Calculator.distFromCoords(endPoint,element.getGeoPoint());
+                    elemDistList.put(dist,element);
+                }
+
+              Element[] elementss = elemDistList.values().toArray(new Element[elemDistList.size()]);
+
+                Element element = elementss[0];
+             String name =    element.getTags().getName();
+
+                EditText editText = (EditText)findViewById(R.id.fromStation);
+                editText.setText(name);
+
+                RoadManager roadManager = new MapQuestRoadManager("DIGIF2BiDrtD1Xbi28SXrkd9Ap2h73Vn");
+                roadManager.addRequestOption("routeType=pedestrian");
+                ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
+                waypoints.add(endPoint);
+                GeoPoint endPoint = new GeoPoint(element.getGeoPoint());
+                waypoints.add(endPoint);
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                Road road = roadManager.getRoad(waypoints);
+                double d = road.mDuration;
+                double x = road.mLength;
+                Toast.makeText(MainActivity.this,String.format("%s min  %s km", String.valueOf(d/60),String.valueOf(x)), Toast.LENGTH_SHORT).show();
+                Polyline roadOverlay = RoadManager.buildRoadOverlay(road, MainActivity.this);
+                mMapView.getOverlays().add(roadOverlay);
+                mMapView.invalidate();
+
+
+
+
             }
         });
+    }
+
+    private  boolean containsName(String name,List<Element> list)
+    {
+        for(Element element : list)
+        {
+            if(element.getTags().getName().equalsIgnoreCase(name))
+            {
+                return true;
+            }
+        }
+        return  false;
     }
 
     @Override
