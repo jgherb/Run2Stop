@@ -607,7 +607,7 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
 
     public  void getBusData(int busId)
     {
-        Ion.with(this).load("http://h.fs-et.de/api.php?id=2763&limit=50").asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+        Ion.with(this).load(String.format("http://h.fs-et.de/api.php?id=%s&limit=5",String.valueOf(busId))).asJsonObject().setCallback(new FutureCallback<JsonObject>() {
             @Override
             public void onCompleted(Exception e, JsonObject result) {
 
