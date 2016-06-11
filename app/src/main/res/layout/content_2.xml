@@ -72,14 +72,15 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom"
+
         >
 
 
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:text="Schneller / Genau richtig / Zeit lassen"
@@ -90,17 +91,38 @@
         />
 
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aktuelle Geschwindigkeit:"
+            android:textSize="16sp"
+            android:layout_marginTop="32dp"
+            android:gravity="center_horizontal"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="xxx km/h"
+            android:id="@+id/tV_current_speed"
+            android:textSize="27sp"
+            android:layout_marginBottom="32dp"
+            android:textColor="#333"
+            android:gravity="center_horizontal"
+            />
 
     <SeekBar
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:gravity="bottom">
 
         <android.support.v7.widget.CardView
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
