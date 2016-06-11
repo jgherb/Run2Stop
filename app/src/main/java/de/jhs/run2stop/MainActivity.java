@@ -8,6 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.provider.DocumentsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -29,10 +30,12 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -44,6 +47,16 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
+import de.jhs.run2stop.model.Calculator;
+import de.jhs.run2stop.model.Element;
+import de.jhs.run2stop.model.RootElement;
 
 public class MainActivity extends AppCompatActivity implements LocationListener  {
 
@@ -140,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         return super.onOptionsItemSelected(item);
     }
-
+boolean gotStation = false;
     @Override
     public void onLocationChanged(Location location) {
 
@@ -154,6 +167,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         //waypoints.add(startPoint);
         //GeoPoint endPoint = new GeoPoint(48.4, -1.9);
         //waypoints.add(endPoint);
+        if(!gotStation)
+        {
+            getStation(startPoint);
+            gotStation=true;
+        }
 
 
         mMapController.setCenter(startPoint);
@@ -194,6 +212,42 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
         mMapController.setCenter(startPoint);
+    }
+
+    private  void getStation(GeoPoint endPoint)
+    {
+
+        Ion.getDefault(this).configure().setLogging("ION", Log.DEBUG);
+        Ion.with(this).load("https://overpass-api.de/api/interpreter").setBodyParameter("data","\n" +
+                "[out:json][timeout:25];\n" +
+                "(\n" +
+                "  // query part for: “highway=bus_stop”\n" +
+                "  node[\"highway\"=\"bus_stop\"]("+ Calculator.getBoundingBoxString(endPoint,0.857)+");\n" +
+                "  \n" +
+                ");\n" +
+                "// print results\n" +
+                "out body;\n" +
+                ">;\n" +
+                "out skel qt;").asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+            @Override
+            public void onCompleted(Exception e, JsonObject result) {
+                if(e!= null)
+                {
+                    e.printStackTrace();
+                    return;
+                }
+                Type collectionType = new TypeToken<RootElement>() {
+                }.getType();
+
+                RootElement userApiFrame = (RootElement)new Gson().fromJson(result,collectionType);
+                List<Element> elements = userApiFrame.getElements();
+
+                for(Element element : elements)
+                {
+                    Toast.makeText(MainActivity.this,element.getTags().getName(),Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override
