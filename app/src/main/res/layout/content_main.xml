@@ -7,46 +7,60 @@
     tools:showIn="@layout/activity_main" tools:context=".MainActivity"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Aktuelle Uhrzeit"
-        android:id="@+id/tV_current_time"
-        android:padding="16dp"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bus kommt um:"
-        android:id="@+id/tV_bus_comes_at"
-        android:padding="16dp"
-        />
-
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="#333"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:background="#d2d2d2"
+        android:orientation="vertical"
+        >
 
-    />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aktuelle Uhrzeit"
+            android:id="@+id/tV_current_time"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bus kommt um:"
+            android:id="@+id/tV_bus_comes_at"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            />
+    </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Busverbindung"
         android:textSize="20sp"
-        android:padding="16dp"/>
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="gewählte Starthaltestelle nach Entfernung:"
-        android:textSize="16sp"
-        android:padding="16dp"
+        android:textSize="14sp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
         android:textColor="#999"/>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         >
 
         <EditText
@@ -54,7 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="von"
-            android:padding="16dp"
+
             />
 
     </android.support.design.widget.TextInputLayout>
@@ -64,13 +78,16 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        >
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Ziel"
-            android:padding="16dp"/>
+            />
 
     </android.support.design.widget.TextInputLayout>
     <RelativeLayout
@@ -97,20 +114,13 @@
 
     </android.support.v7.widget.CardView>
 
+    </RelativeLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="current location: none"
             android:id="@+id/gps_current_loc"
-            android:paddingLeft="16dp"/>
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-
-        </RelativeLayout>
-    </RelativeLayout>
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            />
 </LinearLayout>

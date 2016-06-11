@@ -2,41 +2,122 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior" tools:showIn="@layout/activity_2"
     tools:context="de.jhs.run2stop.Activity2"
     android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="aktuelle Laufgeschwindigkeit km/h"
-        android:gravity="center_horizontal"/>
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Entfernung zum Ziel"
+                android:textSize="16sp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="xxx m"
+                android:textSize="24sp"
+                android:textColor="#333"
+               />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+            <TextView
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Zeit noch übrig"
+                android:gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="XX : XX Mins"
+                android:textSize="24sp"
+                android:textColor="#333"
+                android:gravity="center_horizontal"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        >
+
+
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:text="Schneller / Genau richtig / Zeit lassen"
-        android:paddingTop="100dp"
-        android:textSize="20sp"
+        android:id="@+id/how_fast_indicator"
+        android:textSize="30sp"
         android:textColor="@color/colorAccent"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal|center_vertical"
+        />
 
 
 
     <SeekBar
-        android:paddingTop="32dp"
-        android:paddingBottom="100dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="aktualisierte Entfernung zum Ziel"
-        android:gravity="center_horizontal"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+        <android.support.v7.widget.CardView
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/card_view_calculated"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            card_view:cardCornerRadius="4dp"
+            android:elevation="4dp">
+
+
+
+
+
+        </android.support.v7.widget.CardView>
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </LinearLayout>
