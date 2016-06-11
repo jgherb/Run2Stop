@@ -33,6 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="xxx m"
+                android:id="@+id/tV_distance_goal"
                 android:textSize="24sp"
                 android:textColor="#333"
                />
@@ -58,6 +59,7 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="XX : XX Mins"
+                android:id="@+id/tV_time_left"
                 android:textSize="24sp"
                 android:textColor="#333"
                 android:gravity="center_horizontal"/>
@@ -134,6 +136,12 @@
             android:elevation="4dp">
 
 
+            <org.osmdroid.views.MapView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/mapview_calculated"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:clickable="true" />
 
 
 

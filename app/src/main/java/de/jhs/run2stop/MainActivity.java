@@ -71,6 +71,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private MapView         mMapView;
     private MapController   mMapController;
 
+    RoadManager roadManager;
+    GeoPoint currenLocation;
+    GeoPoint destinationLocation;
+
     LocationManager locationManager;
 
     double lat;
@@ -118,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         mMapView.setBuiltInZoomControls(true);
         mMapView.setMultiTouchControls(true);
         mMapController = (MapController) mMapView.getController();
-        mMapController.setZoom(13);
+        mMapController.setZoom(17);
 
         roadManager = new MapQuestRoadManager("DIGIF2BiDrtD1Xbi28SXrkd9Ap2h73Vn");
         roadManager.addRequestOption("routeType=pedestrian");
@@ -133,6 +137,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onClick(View view) {
                Intent toCalulator = new Intent(MainActivity.this, Activity2.class);
+                toCalulator.putExtra("xtra_destination_lat", destinationLocation.getLatitude());
+                toCalulator.putExtra("xtra_destination_long", destinationLocation.getLongitude());
                 startActivity(toCalulator);
             }
         });
@@ -239,9 +245,7 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
 
         mMapController.setCenter(startPoint);
     }
-    RoadManager roadManager;
-    GeoPoint currenLocation;
-    GeoPoint destinationLocation;
+
     private  void calcRoute()
     {
 
@@ -280,40 +284,36 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
                 "out skel qt;").asJsonObject().setCallback(new FutureCallback<JsonObject>() {
             @Override
             public void onCompleted(Exception e, JsonObject result) {
-                if(e!= null)
-                {
+                if (e != null) {
                     e.printStackTrace();
                     return;
                 }
                 Type collectionType = new TypeToken<RootElement>() {
                 }.getType();
 
-                RootElement userApiFrame = (RootElement)new Gson().fromJson(result,collectionType);
+                RootElement userApiFrame = (RootElement) new Gson().fromJson(result, collectionType);
                 List<Element> elements = userApiFrame.getElements();
 
                 List<Element> filteredElements = new ArrayList<Element>();
 
-                for(Element el: elements)
-                {
-                    if(!containsName(el.getTags().getName(),filteredElements))
-                    {
+                for (Element el : elements) {
+                    if (!containsName(el.getTags().getName(), filteredElements)) {
                         filteredElements.add(el);
                     }
                 }
 
-                TreeMap<Double,Element> elemDistList = new TreeMap<Double, Element>();
-                for(Element element : filteredElements)
-                {
-                    double dist = Calculator.distFromCoords(endPoint,element.getGeoPoint());
-                    elemDistList.put(dist,element);
+                TreeMap<Double, Element> elemDistList = new TreeMap<Double, Element>();
+                for (Element element : filteredElements) {
+                    double dist = Calculator.distFromCoords(endPoint, element.getGeoPoint());
+                    elemDistList.put(dist, element);
                 }
 
-              Element[] elementss = elemDistList.values().toArray(new Element[elemDistList.size()]);
+                Element[] elementss = elemDistList.values().toArray(new Element[elemDistList.size()]);
 
                 Element element = elementss[0];
-             String name =    element.getTags().getName();
+                String name = element.getTags().getName();
 
-                EditText editText = (EditText)findViewById(R.id.fromStation);
+                EditText editText = (EditText) findViewById(R.id.fromStation);
                 editText.setText(name);
 
                 getBusData(getBusId(name));
