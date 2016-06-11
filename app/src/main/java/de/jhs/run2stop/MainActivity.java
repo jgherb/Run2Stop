@@ -163,7 +163,7 @@ boolean gotStation = false;
 
         // fuer Verbindungen zwischen zwei Verbindungen
         // ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-        GeoPoint startPoint = new GeoPoint(longitude, latitude);
+        GeoPoint startPoint = new GeoPoint(latitude, longitude);
         //waypoints.add(startPoint);
         //GeoPoint endPoint = new GeoPoint(48.4, -1.9);
         //waypoints.add(endPoint);
