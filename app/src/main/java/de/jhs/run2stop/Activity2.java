@@ -7,6 +7,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -36,7 +37,11 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 
 import java.lang.reflect.Type;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -126,7 +131,25 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         //waypoints.add(startPoint);
         //GeoPoint endPoint = new GeoPoint(48.4, -1.9);
         //waypoints.add(endPoint);
-        timeToBus.setText(busDeparture.getTimetable());
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        java.util.Date date;
+        String timeStr = "NULL";
+        try {
+             date = (java.util.Date)formatter.parse(busDeparture.getTimetable());
+            Calendar cal = Calendar.getInstance();
+           // long diffhours = date.getHours() - cal.getTime().getHours();
+           // int diffhours = (int) (diff / (60 * 60 * 1000));
+           int diffmin = date.getMinutes() - cal.getTime().getMinutes();//(int) (diff / (60 * 1000));
+
+            timeStr = String.valueOf(diffmin) + " min";
+
+        }
+        catch(Exception exeption)
+        {
+            exeption.printStackTrace();
+        }
+
+        timeToBus.setText(timeStr);
 
            mMapController.setCenter(startPoint);
         mMapView.setOnLongClickListener(new View.OnLongClickListener() {
