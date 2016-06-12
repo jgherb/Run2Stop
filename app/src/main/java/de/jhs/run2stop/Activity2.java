@@ -52,21 +52,23 @@ import de.jhs.run2stop.model.RootElement;
 
 public class Activity2 extends AppCompatActivity implements LocationListener {
 
+    //region varDef
     MapView mMapView;
     MapController mMapController;
-
     RoadManager roadManager;
     GeoPoint currenLocation;
     GeoPoint destinationLocation;
-
     LocationManager locationManager;
     Departure busDeparture;
     boolean gotStation = false;
     Marker lastMarker = null;
-
     TextView distGoal, timeLeft,timeToBus;
+    //endregion
 
-
+    /**
+     * Init method for instanciate all variables
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,17 +79,17 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        //region initVars
         double dLat = getIntent().getDoubleExtra("xtra_destination_lat", 0);
         double dLong = getIntent().getDoubleExtra("xtra_destination_long",0);
         busDeparture = (Departure)getIntent().getSerializableExtra("xtra_bus_depart") ;
-
         distGoal = (TextView) findViewById(R.id.tV_distance_goal);
         timeLeft = (TextView) findViewById(R.id.tV_time_left);
         timeToBus = (TextView) findViewById(R.id.tV_time_left_to_bus);
-
-
         destinationLocation = new GeoPoint(dLat, dLong);
+        //endregion
 
+        //region GPS Location init
         if (!MainActivity.demomode) {
             // get GPS manager -> GPS longitude, latitude in onLocationChanged
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -115,7 +117,9 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
                 }
             },1000);
         }
+        //endregion
 
+        //Map view init
         // MapView integration
         mMapView = (MapView) findViewById(R.id.mapview_calculated);
         mMapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
@@ -123,7 +127,9 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         mMapView.setMultiTouchControls(true);
         mMapController = (MapController) mMapView.getController();
         mMapController.setZoom(17);
+        //endregion
 
+        //road manager init
         roadManager = new MapQuestRoadManager("DIGIF2BiDrtD1Xbi28SXrkd9Ap2h73Vn");
         roadManager.addRequestOption("routeType=pedestrian");
 
@@ -135,27 +141,31 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
 
-
+        //get location
         double latitude = (double) (location.getLatitude());
         double longitude = (double) (location.getLongitude());
 
         // fuer Verbindungen zwischen zwei Verbindungen
-        // ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
+
         final GeoPoint startPoint = new GeoPoint(latitude, longitude);
-       // Toast.makeText(this,"act2 locChanged: " + startPoint.toString(), Toast.LENGTH_SHORT).show();
+
         currenLocation = startPoint;
-        //waypoints.add(startPoint);
-        //GeoPoint endPoint = new GeoPoint(48.4, -1.9);
-        //waypoints.add(endPoint);
+
+        //region TimeDifference calculator
         DateFormat formatter = new SimpleDateFormat("HH:mm");
         java.util.Date date;
         String timeStr = "NULL";
         try {
              date = (java.util.Date)formatter.parse(busDeparture.getTimetable());
             Calendar cal = Calendar.getInstance();
-           // long diffhours = date.getHours() - cal.getTime().getHours();
+            long diffhours = Math.abs(date.getHours() - cal.getTime().getHours());
            // int diffhours = (int) (diff / (60 * 60 * 1000));
-           int diffmin = date.getMinutes() - cal.getTime().getMinutes();//(int) (diff / (60 * 1000));
+            int min =0;
+            if(diffhours>=1)
+            {
+                min=60;
+            }
+           int diffmin = date.getMinutes()+min - cal.getTime().getMinutes();//(int) (diff / (60 * 1000));
 
             timeStr = String.valueOf(diffmin) + " min";
 
@@ -166,6 +176,9 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         }
 
         timeToBus.setText(timeStr);
+        //endregion
+
+
 
            mMapController.setCenter(startPoint);
         mMapView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -188,25 +201,13 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         lastMarker = startMarker;
         mMapView.getOverlays().add(startMarker);
 
-        //Drawable d = getResources().getDrawable(R.drawable.ic_current_location);
+
         if(destinationLocation!=null) calcRoute();
         // aktualisiert Map
         mMapView.invalidate();
 
         // set marker and color
-        //d.setColorFilter(getResources().getColor(R.color.currentLoc), PorterDuff.Mode.MULTIPLY);
-        //startMarker.setIcon(getResources().getDrawable(R.drawable.ic_current_location));
         startMarker.setTitle("Aktuelle Position");
-
-
-        StrictMode.ThreadPolicy pol = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(pol);
-
-        //RoadManager roadManager = new MapQuestRoadManager("DIGIF2BiDrtD1Xbi28SXrkd9Ap2h73Vn");
-        //roadManager.addRequestOption("routeType=pedestrian");
-        //Road road = roadManager.getRoad(waypoints);
-        //Polyline roadOverlay = RoadManager.buildRoadOverlay(road, this);
-        //mMapView.getOverlays().add(roadOverlay);
 
         // aktualisiert Map
         mMapView.invalidate();
@@ -254,33 +255,39 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
     }
   //endregion
 
-
+    /**
+     * Calculates a route from your start location to the next bus stop
+     */
     private  void calcRoute()
     {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();//Strict mode for ignore NetworkOnMainExceptions (!for anytime, have to put in threading)
+        StrictMode.setThreadPolicy(policy);
 
-      //  Toast.makeText(this,"act2 calcRoute", Toast.LENGTH_SHORT).show();
-        ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
+        ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>(); //Build up list of geopoints
         waypoints.add(currenLocation);
         GeoPoint endPoint = new GeoPoint(destinationLocation);
         waypoints.add(endPoint);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
         Road road = roadManager.getRoad(waypoints);
-        double d = road.mDuration;
-        double x = road.mLength;
-        String st_timeLeft = String.format("%s min", String.valueOf(myRound(d / 60,3)));
+        double d = road.mDuration; // get duration
+        double x = road.mLength; // get length
+        String st_timeLeft = String.format("%s min", String.valueOf(myRound(d / 60,3)));//format string
         String st_dist = String.valueOf(myRound(x * 1000,2)) + " m";
 
         timeLeft.setText(st_timeLeft);
         distGoal.setText(st_dist);
-                //Toast.makeText(Activity2.this, String.format("%s min  %s m", String.valueOf(d / 60), String.valueOf(x * 1000)), Toast.LENGTH_SHORT).show();
-        Polyline roadOverlay = RoadManager.buildRoadOverlay(road, Activity2.this);
+        Polyline roadOverlay = RoadManager.buildRoadOverlay(road, Activity2.this);// draw route
         mMapView.getOverlays().add(roadOverlay);
         mMapView.invalidate();
 
 
     }
 
+    /**
+     * Round Method for rounding doubles by number of digit
+     * @param wert Value to round
+     * @param stellen Numer of digit
+     * @return rounded value
+     */
     static double myRound(double wert, int stellen) {
         return  Math.round(wert * Math.pow(10, stellen)) / Math.pow(10, stellen);
     }

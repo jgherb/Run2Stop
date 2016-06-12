@@ -71,31 +71,26 @@ import de.jhs.run2stop.model.RootElement;
 
 public class MainActivity extends AppCompatActivity implements LocationListener  {
 
+    //region VarDef
     private MapView         mMapView;
     private MapController   mMapController;
-
     RoadManager roadManager;
     GeoPoint currenLocation;
     GeoPoint destinationLocation;
-
     LocationManager locationManager;
     Departure busDepart;
-
     double lat;
     double lng;
     LocationManager lm;
     LocationListener ll;
-
     double latitude, longitude;
-
     EditText eT_radian;
     double in_radian;
-
+    boolean gotStation = false;
+    Marker lastMarker = null;
     // Activitate Demo Mode
     static boolean demomode = true;
-
-    ArrayList<OverlayItem> anotherOverlayItemArray;
-    String[] sources;
+   //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,8 +104,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         TextView currentTime = (TextView) findViewById(R.id.tV_current_time);
         currentTime.setText(date);
 
-        // Radian Setter
-
+        //region  Radian Setter
         eT_radian = (EditText)findViewById(R.id.radian);
         String st_radian = eT_radian.getText().toString();
         if(!st_radian.equals("")) {
@@ -121,8 +115,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         {
             in_radian = 0.750d;
         }
+        //endregion
 
-
+        //region GPS Location
         if (!demomode) {
             // get GPS manager -> GPS longitude, latitude in onLocationChanged
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -150,12 +145,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
             },4500);
         }
+        //endregion
 
-
-
-
-
-
+        //region MapInit
         // MapView integration
         mMapView = (MapView) findViewById(R.id.mapview);
         mMapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
@@ -166,13 +158,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         roadManager = new MapQuestRoadManager("DIGIF2BiDrtD1Xbi28SXrkd9Ap2h73Vn");
         roadManager.addRequestOption("routeType=pedestrian");
-
-        // more at onLocationChanged
-
-        Location location = new Location("");
-        Handler
-
-
+       //endregion
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -191,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
 
-
+  //region obsolete Methods
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -213,8 +199,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         return super.onOptionsItemSelected(item);
     }
-boolean gotStation = false;
-    Marker lastMarker = null;
+
+
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+
+
+    //endregion
+
 
     @Override
     public void onLocationChanged(Location location) {
@@ -224,12 +232,10 @@ boolean gotStation = false;
         double longitude = (double) (location.getLongitude());
 
         // fuer Verbindungen zwischen zwei Verbindungen
-        // ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-       final GeoPoint startPoint = new GeoPoint(latitude, longitude);
+        final GeoPoint startPoint = new GeoPoint(latitude, longitude);
         currenLocation = startPoint;
-        //waypoints.add(startPoint);
-        //GeoPoint endPoint = new GeoPoint(48.4, -1.9);
-        //waypoints.add(endPoint);
+
+
         if(!gotStation)
         {
             getStation(startPoint);
@@ -237,13 +243,13 @@ boolean gotStation = false;
             mMapView.getOverlays().clear();
         }
 
-mMapView.setOnLongClickListener(new View.OnLongClickListener() {
-    @Override
-    public boolean onLongClick(View v) {
-        mMapController.setCenter(startPoint);
-        return true;
-    }
-});
+        mMapView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mMapController.setCenter(startPoint);
+                return true;
+            }
+        });
 
 
         // Marker integration
@@ -257,25 +263,17 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
         lastMarker = startMarker;
         mMapView.getOverlays().add(startMarker);
 
-        //Drawable d = getResources().getDrawable(R.drawable.ic_current_location);
+
     if(destinationLocation!=null) calcRoute();
         // aktualisiert Map
         mMapView.invalidate();
 
         // set marker and color
-        //d.setColorFilter(getResources().getColor(R.color.currentLoc), PorterDuff.Mode.MULTIPLY);
-        //startMarker.setIcon(getResources().getDrawable(R.drawable.ic_current_location));
         startMarker.setTitle("Aktuelle Position");
 
 
         StrictMode.ThreadPolicy pol = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(pol);
-
-        //RoadManager roadManager = new MapQuestRoadManager("DIGIF2BiDrtD1Xbi28SXrkd9Ap2h73Vn");
-        //roadManager.addRequestOption("routeType=pedestrian");
-        //Road road = roadManager.getRoad(waypoints);
-        //Polyline roadOverlay = RoadManager.buildRoadOverlay(road, this);
-        //mMapView.getOverlays().add(roadOverlay);
 
         // aktualisiert Map
         mMapView.invalidate();
@@ -285,10 +283,12 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
         currentLoc.setText(st_currentLoc);
 
 
-
-        mMapController.setCenter(startPoint);
+        mMapController.setCenter(startPoint);//Center map
     }
 
+    /**
+     * Calulates a route from current destination to the next bus stop
+     */
     private  void calcRoute()
     {
 
@@ -302,7 +302,6 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
         Road road = roadManager.getRoad(waypoints);
         double d = road.mDuration;
         double x = road.mLength;
-        //Toast.makeText(MainActivity.this,String.format("%s min  %s m", String.valueOf(d/60),String.valueOf(x*1000)), Toast.LENGTH_SHORT).show();
         Polyline roadOverlay = RoadManager.buildRoadOverlay(road, MainActivity.this);
         mMapView.getOverlays().add(roadOverlay);
         mMapView.invalidate();
@@ -310,6 +309,10 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
 
     }
 
+    /**
+     * Get the next station to the geoLocation
+     * @param endPoint endPoint to search for busStations
+     */
     private  void getStation(final  GeoPoint endPoint)
     {
 
@@ -371,6 +374,12 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
         });
     }
 
+    /**
+     * Checks if the parameter list contanis name
+     * @param name name to check
+     * @param list list to search
+     * @return list contains name?
+     */
     private  boolean containsName(String name,List<Element> list)
     {
         for(Element element : list)
@@ -383,6 +392,10 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
         return  false;
     }
 
+    /**
+     * Returns hardcoded hash map for all Bus stations in Ulm
+     * @return
+     */
     public HashMap<String,Integer> getBusList()
     {
         HashMap<String,Integer> hashMap = new HashMap<>();
@@ -641,13 +654,21 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
         return  hashMap;
     }
 
+    /**
+     * Gets the bus id from the station name
+     * @param name Station name
+     * @return bus id of the station
+     */
     public  int getBusId(String name)
     {
 
         return getBusList().get(name);
     }
 
-
+    /**
+     * Get the current bus data by the bus station id
+     * @param busId bus (station) id
+     */
     public  void getBusData(int busId)
     {
         Ion.with(this).load(String.format("http://h.fs-et.de/api.php?id=%s&limit=5",String.valueOf(busId))).asJsonObject().setCallback(new FutureCallback<JsonObject>() {
@@ -672,22 +693,6 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
         });
     }
 
-    @Override
-    public void onProviderDisabled(String provider) {
-
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
 
 
 
