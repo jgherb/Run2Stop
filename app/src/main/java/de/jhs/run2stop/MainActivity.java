@@ -148,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         // more at onLocationChanged
 
+        Location location = new Location("");
+        Handler
 
 
 
