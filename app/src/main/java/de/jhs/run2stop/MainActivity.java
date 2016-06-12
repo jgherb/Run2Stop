@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     GeoPoint destinationLocation;
 
     LocationManager locationManager;
+    Departure busDepart;
 
     double lat;
     double lng;
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                Intent toCalulator = new Intent(MainActivity.this, Activity2.class);
                 toCalulator.putExtra("xtra_destination_lat", destinationLocation.getLatitude());
                 toCalulator.putExtra("xtra_destination_long", destinationLocation.getLongitude());
+                toCalulator.putExtra("xtra_bus_depart",busDepart);
                 startActivity(toCalulator);
             }
         });
@@ -259,7 +261,7 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
         Road road = roadManager.getRoad(waypoints);
         double d = road.mDuration;
         double x = road.mLength;
-        Toast.makeText(MainActivity.this,String.format("%s min  %s m", String.valueOf(d/60),String.valueOf(x*1000)), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this,String.format("%s min  %s m", String.valueOf(d/60),String.valueOf(x*1000)), Toast.LENGTH_SHORT).show();
         Polyline roadOverlay = RoadManager.buildRoadOverlay(road, MainActivity.this);
         mMapView.getOverlays().add(roadOverlay);
         mMapView.invalidate();
@@ -622,6 +624,7 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
                 BusData userApiFrame = (BusData)new Gson().fromJson(result,collectionType);
                 TextView textView = (TextView)findViewById(R.id.tV_bus_comes_at);
                 Departure departure = userApiFrame.getDepartures().get(0);
+                busDepart = departure;
                 textView.setText(String.format("Bus (%s - %s) kommt um: %s",departure.getLine(),departure.getDirection(),departure.getTimetable()));
 
             }

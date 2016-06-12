@@ -5,8 +5,10 @@ package de.jhs.run2stop.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 
-public class Departure {
+
+public class Departure implements Serializable {
 
     @SerializedName("line")
     @Expose

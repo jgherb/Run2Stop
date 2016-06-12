@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Zeit noch übrig"
+                android:text="geschätzte Gehzeit"
                 android:gravity="center_horizontal"/>
 
             <TextView
@@ -60,6 +60,32 @@
                 android:layout_height="wrap_content"
                 android:text="XX : XX Mins"
                 android:id="@+id/tV_time_left"
+                android:textSize="24sp"
+                android:textColor="#333"
+                android:gravity="center_horizontal"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+            <TextView
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Zeit bis Bus kommt"
+                android:gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="XX : XX Mins"
+                android:id="@+id/tV_time_left_to_bus"
                 android:textSize="24sp"
                 android:textColor="#333"
                 android:gravity="center_horizontal"/>

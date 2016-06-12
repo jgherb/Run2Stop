@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import de.jhs.run2stop.model.Calculator;
+import de.jhs.run2stop.model.Departure;
 import de.jhs.run2stop.model.Element;
 import de.jhs.run2stop.model.RootElement;
 
@@ -54,8 +55,11 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
     GeoPoint destinationLocation;
 
     LocationManager locationManager;
+    Departure busDeparture;
+    boolean gotStation = false;
+    Marker lastMarker = null;
 
-    TextView distGoal, timeLeft;
+    TextView distGoal, timeLeft,timeToBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +73,15 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
 
         double dLat = getIntent().getDoubleExtra("xtra_destination_lat", 0);
         double dLong = getIntent().getDoubleExtra("xtra_destination_long",0);
+        busDeparture = (Departure)getIntent().getSerializableExtra("xtra_bus_depart") ;
 
         distGoal = (TextView) findViewById(R.id.tV_distance_goal);
         timeLeft = (TextView) findViewById(R.id.tV_time_left);
+        timeToBus = (TextView) findViewById(R.id.tV_time_left_to_bus);
 
 
         destinationLocation = new GeoPoint(dLat, dLong);
-
+       // Toast.makeText(this,"act2 desLoc: "  + destinationLocation.toString(), Toast.LENGTH_SHORT).show();
         // get GPS manager -> GPS longitude, latitude in onLocationChanged
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         String locationProvider = LocationManager.GPS_PROVIDER;
@@ -95,7 +101,7 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         mMapView.setBuiltInZoomControls(true);
         mMapView.setMultiTouchControls(true);
         mMapController = (MapController) mMapView.getController();
-        mMapController.setZoom(13);
+        mMapController.setZoom(17);
 
         roadManager = new MapQuestRoadManager("DIGIF2BiDrtD1Xbi28SXrkd9Ap2h73Vn");
         roadManager.addRequestOption("routeType=pedestrian");
@@ -104,34 +110,6 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id==android.R.id.home) {
-            finish();
-        }
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    boolean gotStation = false;
-    Marker lastMarker = null;
 
     @Override
     public void onLocationChanged(Location location) {
@@ -143,12 +121,14 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         // fuer Verbindungen zwischen zwei Verbindungen
         // ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
         final GeoPoint startPoint = new GeoPoint(latitude, longitude);
+       // Toast.makeText(this,"act2 locChanged: " + startPoint.toString(), Toast.LENGTH_SHORT).show();
         currenLocation = startPoint;
         //waypoints.add(startPoint);
         //GeoPoint endPoint = new GeoPoint(48.4, -1.9);
         //waypoints.add(endPoint);
+        timeToBus.setText(busDeparture.getTimetable());
 
-
+           mMapController.setCenter(startPoint);
         mMapView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -193,6 +173,7 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         mMapView.invalidate();
     }
 
+    //region notUsedMethods
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -207,11 +188,38 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id==android.R.id.home) {
+            finish();
+        }
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+  //endregion
+
 
     private  void calcRoute()
     {
 
-
+      //  Toast.makeText(this,"act2 calcRoute", Toast.LENGTH_SHORT).show();
         ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
         waypoints.add(currenLocation);
         GeoPoint endPoint = new GeoPoint(destinationLocation);
@@ -221,8 +229,8 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         Road road = roadManager.getRoad(waypoints);
         double d = road.mDuration;
         double x = road.mLength;
-        String st_timeLeft = String.format("%s min  %s m", String.valueOf(d / 60));
-        String st_dist = String.valueOf(x * 1000);
+        String st_timeLeft = String.format("%s min", String.valueOf(myRound(d / 60,3)));
+        String st_dist = String.valueOf(myRound(x * 1000,2)) + " m";
 
         timeLeft.setText(st_timeLeft);
         distGoal.setText(st_dist);
@@ -232,6 +240,10 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
         mMapView.invalidate();
 
 
+    }
+
+    static double myRound(double wert, int stellen) {
+        return  Math.round(wert * Math.pow(10, stellen)) / Math.pow(10, stellen);
     }
 
 }
