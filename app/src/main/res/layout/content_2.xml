@@ -124,7 +124,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="xxx km/h"
+            android:text="1.23 m/s"
             android:id="@+id/tV_current_speed"
             android:textSize="27sp"
             android:layout_marginBottom="32dp"

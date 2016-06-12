@@ -66,6 +66,7 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
 
     TextView distGoal, timeLeft,timeToBus;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,19 +87,34 @@ public class Activity2 extends AppCompatActivity implements LocationListener {
 
 
         destinationLocation = new GeoPoint(dLat, dLong);
-       // Toast.makeText(this,"act2 desLoc: "  + destinationLocation.toString(), Toast.LENGTH_SHORT).show();
-        // get GPS manager -> GPS longitude, latitude in onLocationChanged
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        String locationProvider = LocationManager.GPS_PROVIDER;
+
+        if (!MainActivity.demomode) {
+            // get GPS manager -> GPS longitude, latitude in onLocationChanged
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            String locationProvider = LocationManager.GPS_PROVIDER;
 
 
-        try {
-            locationManager.requestLocationUpdates(locationProvider, 0, 0, Activity2.this);
+            try {
+                locationManager.requestLocationUpdates(locationProvider, 0, 0, Activity2.this);
+            }
+            catch(final SecurityException ex) {
+                Toast.makeText(this, "Leider können wir ohne GPS keine Route berechnen", Toast.LENGTH_SHORT).show();
+            }
         }
-        catch(final SecurityException ex) {
-            Toast.makeText(this, "Leider können wir ohne GPS keine Route berechnen", Toast.LENGTH_SHORT).show();
-        }
 
+        else {
+            android.os.Handler handler = new android.os.Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Location location  = new Location("");
+                    location.setLatitude(48.4224);//your coords of course
+                    location.setLongitude(9.9579);
+
+                    onLocationChanged(location);
+                }
+            },1000);
+        }
 
         // MapView integration
         mMapView = (MapView) findViewById(R.id.mapview_calculated);

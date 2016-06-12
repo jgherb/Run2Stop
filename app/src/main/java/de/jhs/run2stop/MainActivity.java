@@ -44,6 +44,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.logging.Handler;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -90,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     EditText eT_radian;
     double in_radian;
 
+    // Activitate Demo Mode
+    static boolean demomode = true;
+
     ArrayList<OverlayItem> anotherOverlayItemArray;
     String[] sources;
 
@@ -119,18 +123,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
 
 
+        if (!demomode) {
+            // get GPS manager -> GPS longitude, latitude in onLocationChanged
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            String locationProvider = LocationManager.GPS_PROVIDER;
 
-        // get GPS manager -> GPS longitude, latitude in onLocationChanged
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        String locationProvider = LocationManager.GPS_PROVIDER;
 
-
-        try {
-            locationManager.requestLocationUpdates(locationProvider, 0, 0, MainActivity.this);
+            try {
+                locationManager.requestLocationUpdates(locationProvider, 0, 0, MainActivity.this);
+            }
+            catch(final SecurityException ex) {
+                Toast.makeText(this, "Leider können wir ohne GPS keine Route berechnen", Toast.LENGTH_SHORT).show();
+            }
         }
-        catch(final SecurityException ex) {
-            Toast.makeText(this, "Leider können wir ohne GPS keine Route berechnen", Toast.LENGTH_SHORT).show();
+
+        else {
+            android.os.Handler handler = new android.os.Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Location location  = new Location("");
+                    location.setLatitude(48.4224);//your coords of course
+                    location.setLongitude(9.9579);
+
+                    onLocationChanged(location);
+                }
+            },4500);
         }
+
+
 
 
 
