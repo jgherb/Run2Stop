@@ -13,6 +13,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -85,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     double latitude, longitude;
 
+    EditText eT_radian;
+    int in_radian;
+
     ArrayList<OverlayItem> anotherOverlayItemArray;
     String[] sources;
 
@@ -99,6 +104,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         String date = "Aktuelle Uhrzeit: "+ df.format(Calendar.getInstance().getTime());
         TextView currentTime = (TextView) findViewById(R.id.tV_current_time);
         currentTime.setText(date);
+
+        // Radian Setter
+
+        
+        String st_radian = eT_radian.getText().toString();
+        in_radian = Integer.parseInt(st_radian)/1000;
+        // Weitergabe an Bus getStation
 
 
 
@@ -277,7 +289,7 @@ mMapView.setOnLongClickListener(new View.OnLongClickListener() {
                 "[out:json][timeout:25];\n" +
                 "(\n" +
                 "  // query part for: “highway=bus_stop”\n" +
-                "  node[\"highway\"=\"bus_stop\"]("+ Calculator.getBoundingBoxString(endPoint,0.750)+");\n" +
+                "  node[\"highway\"=\"bus_stop\"]("+ Calculator.getBoundingBoxString(endPoint,in_radian)+");\n" +
                 "  \n" +
                 ");\n" +
                 "// print results\n" +

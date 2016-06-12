@@ -37,14 +37,28 @@
             />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Busverbindung"
-        android:textSize="20sp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Busverbindung im Radius von"
+            android:textSize="20sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"/>
+
+        <EditText
+            android:id="@+id/radian"
+            android:inputType="numberDecimal"
+            android:hint="in m"
+            android:layout_width="match_parent"
+            android:layout_marginRight="16dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -105,12 +119,7 @@
         android:elevation="4dp">
 
 
-    <org.osmdroid.views.MapView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/mapview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:clickable="true" />
+
 
     </android.support.v7.widget.CardView>
 
