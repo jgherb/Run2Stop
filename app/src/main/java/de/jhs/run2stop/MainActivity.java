@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     double latitude, longitude;
 
     EditText eT_radian;
-    int in_radian;
+    double in_radian;
 
     ArrayList<OverlayItem> anotherOverlayItemArray;
     String[] sources;
@@ -107,10 +107,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         // Radian Setter
 
-        
+        eT_radian = (EditText)findViewById(R.id.radian);
         String st_radian = eT_radian.getText().toString();
-        in_radian = Integer.parseInt(st_radian)/1000;
-        // Weitergabe an Bus getStation
+        if(!st_radian.equals("")) {
+            in_radian = (double)Integer.parseInt(st_radian) / 1000;
+            // Weitergabe an Bus getStation
+        }
+        else
+        {
+            in_radian = 0.750d;
+        }
 
 
 
